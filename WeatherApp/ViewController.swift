@@ -31,6 +31,8 @@ override func viewDidDisappear(_ animated: Bool) {
 import UIKit
 
 class ViewController: UIViewController {
+    
+    
     // Uma lazy var em Swift é uma propriedade que só é criada quando você a usa pela primeira vez. Isso economiza memória e processamento, especialmente para coisas que podem demorar ou não ser usadas sempre.
     //Instâncio ela, coloco as configurações e depois retorno a view
     private lazy var backgroundView: UIImageView = {
@@ -46,7 +48,7 @@ class ViewController: UIViewController {
     private lazy var headerView: UIView = {
         let view = UIView(frame: .zero)
         view.translatesAutoresizingMaskIntoConstraints = false
-        view.backgroundColor = UIColor(named: "contrastColor")
+        view.backgroundColor = UIColor.contrastColor
         view.layer.cornerRadius = 20 //Serve para deixar os cantos arredondados
         return view
     }()
@@ -57,7 +59,7 @@ class ViewController: UIViewController {
         label.font = UIFont.systemFont(ofSize: 20)
         label.text = "Ribeirão Preto"
         label.textAlignment = .center //Alinhamento da label
-        label.textColor = UIColor(named: "primaryColor") //Setamos no "Assets" como newColor e puxamos para cá
+        label.textColor = UIColor.primaryColor //Setamos no "Assets" como newColor e puxamos para cá
         return label
     }()
     
@@ -67,7 +69,7 @@ class ViewController: UIViewController {
         label.font = UIFont.systemFont(ofSize: 70, weight: .bold)
         label.text = "25°C"
         label.textAlignment = .left//Alinhamento da label
-        label.textColor = UIColor(named: "primaryColor") //Setamos no "Assets" como newColor e puxamos para cá
+        label.textColor = UIColor.primaryColor //Setamos no "Assets" como newColor e puxamos para cá
         return label
     }()
     
@@ -84,7 +86,7 @@ class ViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Umidade"
         label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        label.textColor = UIColor(named: "contrastColor")
+        label.textColor = UIColor.contrastColor
         return label
     }()
     
@@ -93,7 +95,7 @@ class ViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "1000mm"
         label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        label.textColor = UIColor(named: "contrastColor")
+        label.textColor = UIColor.contrastColor
         return label
     }()
     
@@ -109,7 +111,7 @@ class ViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "Vento"
         label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        label.textColor = UIColor(named: "contrastColor")
+        label.textColor = UIColor.contrastColor
         return label
     }()
     
@@ -118,7 +120,7 @@ class ViewController: UIViewController {
         label.translatesAutoresizingMaskIntoConstraints = false
         label.text = "10km/h"
         label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
-        label.textColor = UIColor(named: "contrastColor")
+        label.textColor = UIColor.contrastColor
         return label
     }()
     
@@ -135,11 +137,40 @@ class ViewController: UIViewController {
         stackView.axis = .vertical
         stackView.translatesAutoresizingMaskIntoConstraints = false
         stackView.spacing = 3 //Espaçamento entre as duas stacks
-        stackView.backgroundColor = UIColor(named: "softGray")
+        stackView.backgroundColor = UIColor.softGray
         stackView.layer.cornerRadius = 10
         stackView.isLayoutMarginsRelativeArrangement = true //Setando como TRUE, podemos customizar as nossas margens
         stackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 12, leading: 24, bottom: 12, trailing: 24)
         return stackView
+    }()
+        
+    private lazy var hourlyForecastLabel: UILabel = {
+        let label = UILabel()
+        label.translatesAutoresizingMaskIntoConstraints = false
+        label.textColor = UIColor.contrastColor
+        label.text = "PREVISÃO POR HORA"
+        label.font = UIFont.systemFont(ofSize: 12, weight: .semibold)
+        label.textAlignment = .center
+        return label
+    }()
+    
+    //Permite exibir e gerenciar uma coleção de itens em uma interface de maneira altamente customizável, organizando-os em uma grade ou lista. O UICollectionView é particularmente útil quando você precisa exibir um grande número de itens que podem ser organizados de forma flexível.
+    private lazy var houryCollectionView: UICollectionView = {
+        let layout = UICollectionViewFlowLayout()
+        layout.scrollDirection = .horizontal //Colando o layout para scrolar apenas horizontalmente
+        layout.itemSize = CGSize(width: 67, height: 84)
+        layout.sectionInset = UIEdgeInsets(top: .zero, 
+                                           left: 10,
+                                           bottom: .zero,
+                                           right: 10) //Margens das posições
+        let collectionView = UICollectionView(frame: .zero,
+                                              collectionViewLayout: layout)
+        collectionView.translatesAutoresizingMaskIntoConstraints = false
+        collectionView.backgroundColor = .clear
+        collectionView.dataSource = self
+        //Registrando uma célula personalizada
+        collectionView.register(HourlyForecastCollectionViewCell.self, forCellWithReuseIdentifier: HourlyForecastCollectionViewCell.identifier)
+        return collectionView
     }()
     
     override func viewDidLoad() {
@@ -163,6 +194,8 @@ class ViewController: UIViewController {
         view.addSubview(backgroundView)
         view.addSubview(headerView)
         view.addSubview(statsStackView) //Adicionando a minha stackview vertical para compor as duas stackview horizontal
+        view.addSubview(hourlyForecastLabel)
+        view.addSubview(houryCollectionView)
         
         headerView.addSubview(cityLabel) //Adicionando como subview pois a label (cityLabel) esta dentro da headerView
         headerView.addSubview(temperatureLabel)
@@ -217,7 +250,30 @@ class ViewController: UIViewController {
             statsStackView.centerXAnchor.constraint(equalTo: view.centerXAnchor)
         ])
         
+        NSLayoutConstraint.activate([
+            hourlyForecastLabel.topAnchor.constraint(equalTo: statsStackView.bottomAnchor, constant: 29),
+            hourlyForecastLabel.leadingAnchor.constraint(equalTo: view.leadingAnchor, constant: 35),
+            hourlyForecastLabel.trailingAnchor.constraint(equalTo: view.trailingAnchor, constant: -35),
+            
+            houryCollectionView.topAnchor.constraint(equalTo: hourlyForecastLabel.bottomAnchor, constant: 22),
+            houryCollectionView.heightAnchor.constraint(equalToConstant: 84),
+            houryCollectionView.leadingAnchor.constraint(equalTo: view.leadingAnchor),
+            houryCollectionView.trailingAnchor.constraint(equalTo: view.trailingAnchor)
+        ])
+        
+        
     }
 }
 
+//Extensão para a ViewController, fizemos isso pois na nossa collectionView colocamos ela para dar um "dataSource = self" (própria instância atual)
+extension ViewController: UICollectionViewDataSource {
+    func collectionView(_ collectionView: UICollectionView, numberOfItemsInSection section: Int) -> Int {
+        return 10
+    }
+    
+    func collectionView(_ collectionView: UICollectionView, cellForItemAt indexPath: IndexPath) -> UICollectionViewCell {
+        let cell = collectionView.dequeueReusableCell(withReuseIdentifier: HourlyForecastCollectionViewCell.identifier, for: indexPath)
+        return cell
+    }
+}
 
