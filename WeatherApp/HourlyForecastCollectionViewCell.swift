@@ -15,9 +15,9 @@ class HourlyForecastCollectionViewCell: UICollectionViewCell {
        let stackView = UIStackView(arrangedSubviews: [hourLabel, iconImageView, temperatureLabel])
         stackView.axis = .vertical
         stackView.translatesAutoresizingMaskIntoConstraints = false
-        stackView.spacing = 5
+        stackView.spacing = 4
         stackView.isLayoutMarginsRelativeArrangement = true //Respeite as margens direcionais
-        stackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 0,
+        stackView.directionalLayoutMargins = NSDirectionalEdgeInsets(top: 8,
                                                                      leading: 8,
                                                                      bottom: 8,
                                                                      trailing: 8)
@@ -51,7 +51,7 @@ class HourlyForecastCollectionViewCell: UICollectionViewCell {
         let imageView = UIImageView()
         imageView.translatesAutoresizingMaskIntoConstraints = false
         imageView.image = UIImage(named: "sunIcon")
-        imageView.contentMode = .scaleAspectFill
+        imageView.contentMode = .scaleAspectFit
         return imageView
     }()
     
@@ -74,11 +74,8 @@ class HourlyForecastCollectionViewCell: UICollectionViewCell {
     }
     
     private func setConstraints(){
+        stackView.setConstraintsToParent(contentView)
         NSLayoutConstraint.activate([
-            stackView.topAnchor.constraint(equalTo: contentView.topAnchor),
-            stackView.bottomAnchor.constraint(equalTo: contentView.bottomAnchor),
-            stackView.leadingAnchor.constraint(equalTo: contentView.leadingAnchor),
-            stackView.trailingAnchor.constraint(equalTo: contentView.trailingAnchor),
             iconImageView.heightAnchor.constraint(equalToConstant: 33)
         ])
     }
